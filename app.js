@@ -148,11 +148,29 @@ function cyclePanels() {
     currentStopIndex = (currentStopIndex + 1) % stopKeys.length;
 }
 
-// Data Fetching Logic
-async function fetchETAs() {
+// Static Mock Data for GitHub Pages
+const mockArrivals = {
+    north: [
+        { route: '1', destination: 'Rangiora', time: 'Due' },
+        { route: '95', destination: 'Pegasus', time: '5 min' },
+        { route: '1', destination: 'Rangiora', time: '15 min' }
+    ],
+    south: [
+        { route: '1', destination: 'Cashmere', time: '2 min' },
+        { route: '95', destination: 'City', time: '10 min' }
+    ],
+    east: [
+        { route: '125', destination: 'Redwood', time: '7 min' }
+    ],
+    west: [
+        { route: '125', destination: 'Westlake', time: '12 min' }
+    ]
+};
+
+// Data Fetching Logic (Static)
+function fetchETAs() {
     try {
-        const response = await fetch('http://localhost:3000/api/arrivals');
-        const data = await response.json();
+        const data = mockArrivals;
         
         for (const [key, stop] of Object.entries(stops)) {
             const stopData = data[key];
@@ -178,12 +196,11 @@ async function fetchETAs() {
             }
         }
     } catch (err) {
-        console.error('Error fetching arrivals:', err);
+        console.error('Error rendering arrivals:', err);
     }
 }
 
-// Start polling data
-setInterval(fetchETAs, 10000);
+// Render data immediately
 setTimeout(fetchETAs, 1000);
 
 // Start Carousel
