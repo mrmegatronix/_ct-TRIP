@@ -221,10 +221,7 @@ function fetchETAs() {
                 html += `<div style="text-align:center; padding:10px; font-style:italic;">No upcoming buses found</div>`;
             }
             
-            const cardEl = document.getElementById(`card-${key}`);
-            if (cardEl) {
-                cardEl.innerHTML = html;
-            }
+            popups[key].setContent(`<div class="eta-card" id="card-${key}">${html}</div>`);
         }
     } catch (err) {
         console.error('Error rendering arrivals:', err);
