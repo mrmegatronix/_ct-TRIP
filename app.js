@@ -1,5 +1,5 @@
-// Venue Location
-const venueCoords = [-43.4774150, 172.6164750];
+// Venue Location (Coasters Tavern)
+const venueCoords = [-43.47813787786105, 172.61740700674628];
 
 // Map Initialization - Dashboard Mode (No interactions, locked view)
 const map = L.map('map', {
@@ -28,8 +28,17 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.p
     className: 'bright-labels'
 }).addTo(map);
 
-// Venue Configuration (Coasters Tavern)
+// Venue Marker using Coasters Logo
+const venueIcon = L.icon({
+    iconUrl: 'logo.png',
+    iconSize: [80, 80],
+    iconAnchor: [40, 40],
+    className: 'venue-logo'
+});
+L.marker(venueCoords, { icon: venueIcon, zIndexOffset: 1000 }).addTo(map);
 
+// Library Location and Icon
+const libraryCoords = [-43.4774150, 172.6164750];
 const libraryIcon = L.divIcon({
     className: 'custom-venue-icon',
     html: `
@@ -39,7 +48,7 @@ const libraryIcon = L.divIcon({
     iconSize: [80, 100],
     iconAnchor: [40, 50]
 });
-L.marker(venueCoords, { icon: libraryIcon, zIndexOffset: 1000 }).addTo(map);
+L.marker(libraryCoords, { icon: libraryIcon }).addTo(map);
 
 
 // Bus Stop Definitions
@@ -54,8 +63,8 @@ const stops = {
 
 const islandCoords = [-43.477415, 172.616900];
 const footpaths = {
-    north: [venueCoords, stops.north.coords], // West side, no need to cross
-    south: [venueCoords, islandCoords, stops.south.coords], // East side, cross at island
+    north: [venueCoords, libraryCoords, islandCoords, stops.north.coords], // crosses road at library/island
+    south: [venueCoords, [-43.47826, 172.61740], [-43.4778, 172.61740], stops.south.coords], // walks up east side
     east:  [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.617800], stops.east.coords],
     west:  [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.61745], [-43.47835, 172.61745], stops.west.coords]
 };
