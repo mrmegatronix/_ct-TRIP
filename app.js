@@ -33,8 +33,8 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.p
 const libraryIcon = L.divIcon({
     className: 'custom-venue-icon',
     html: `
-        <div class="venue-icon-container"><i class="fa-solid fa-beer-mug-empty"></i></div>
-        <div class="venue-label">COASTERS</div>
+        <div class="venue-icon-container"><i class="fa-solid fa-building-columns"></i></div>
+        <div class="venue-label">LIBRARY</div>
     `,
     iconSize: [80, 100],
     iconAnchor: [40, 50]
