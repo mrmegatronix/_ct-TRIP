@@ -442,7 +442,7 @@ async function fetchETAs() {
 
                             etas.push({
                                 route: routeNum,
-                                destination: `#${routeNum} - ${destName.toUpperCase()}`,
+                                destination: destName.toUpperCase(),
                                 time: diffMins === 0 ? 'Due' : `${diffMins} min`,
                                 timestamp: arrivalTime.getTime()
                             });
