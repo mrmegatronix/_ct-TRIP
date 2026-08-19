@@ -211,6 +211,24 @@ body {
     animation: dash-animation 1s linear infinite;
 }
 
+.custom-venue-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.5s ease;
+}
+
+.dimmed {
+    opacity: 0.3 !important;
+    filter: grayscale(80%);
+}
+
+.clock-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
 /* ======== CLOCK ======== */
 .clock {
     font-family: 'Courier New', Courier, monospace;
@@ -220,7 +238,17 @@ body {
     text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
     white-space: nowrap;
     flex-shrink: 0;
-    margin-bottom: 5px;
+    line-height: 1;
+}
+
+.sync-status {
+    font-size: 14px;
+    color: #66fcf1;
+    font-weight: bold;
+    margin-top: 8px;
+    text-shadow: 0px 0px 5px rgba(102, 252, 241, 0.5);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 1px;
 }
 
 /* ======== TITLE (matches clock) ======== */

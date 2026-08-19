@@ -48,7 +48,7 @@ const libraryIcon = L.divIcon({
     iconSize: [80, 100],
     iconAnchor: [40, 50]
 });
-L.marker(libraryCoords, { icon: libraryIcon }).addTo(map);
+const libraryMarker = L.marker(libraryCoords, { icon: libraryIcon }).addTo(map);
 
 
 // Bus Stop Definitions
@@ -327,11 +327,26 @@ function cyclePanels() {
     // Fade out board
     board.style.opacity = '0';
     
-    // Remove blink from all markers
-    for (const key of stopKeys) {
+    // Highlight active stop marker, dim others
+    const stopKeys = Object.keys(stops);
+    stopKeys.forEach(key => {
         if (stops[key].marker) {
-            L.DomUtil.removeClass(stops[key].marker.getElement(), 'active-stop-marker');
+            const el = stops[key].marker.getElement();
+            if (el) {
+                L.DomUtil.removeClass(el, 'active-stop-marker');
+                if (key === activeKey) {
+                    L.DomUtil.removeClass(el, 'dimmed');
+                } else {
+                    L.DomUtil.addClass(el, 'dimmed');
+                }
+            }
         }
+    });
+
+    // Keep library dimmed
+    if (libraryMarker) {
+        const el = libraryMarker.getElement();
+        if (el) L.DomUtil.addClass(el, 'dimmed');
     }
     
     // Hide all walking lines
@@ -384,7 +399,8 @@ function cyclePanels() {
         
         // Make the active marker blink
         if (stops[activeKey].marker) {
-            L.DomUtil.addClass(stops[activeKey].marker.getElement(), 'active-stop-marker');
+            const el = stops[activeKey].marker.getElement();
+            if (el) L.DomUtil.addClass(el, 'active-stop-marker');
         }
         
         // Fade in board
@@ -474,8 +490,23 @@ async function fetchETAs() {
             
             popups[key] = `<div class="eta-card" id="card-${key}">${html}</div>`;
         }
+        
+        // Update sync status text
+        updateSyncStatus();
     } catch (err) {
         console.error('Error rendering arrivals:', err);
+    }
+}
+
+// Function to update the sync status
+function updateSyncStatus() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    const syncStatusEl = document.getElementById('sync-status');
+    if (syncStatusEl) {
+        syncStatusEl.textContent = `DATA LAST SYNCED: ${hours}:${minutes}:${seconds}`;
     }
 }
 
