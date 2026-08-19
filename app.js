@@ -443,13 +443,14 @@ async function fetchETAs() {
                                 route: routeNum,
                                 destination: destName.toUpperCase(),
                                 time: diffMins === 0 ? 'Due' : `${diffMins} min`,
+                                diffMins: diffMins,
                                 timestamp: arrivalTime.getTime()
                             });
                         }
                     }
                 }
                 etas.sort((a, b) => a.timestamp - b.timestamp);
-                data[key] = etas.slice(0, 3).map(e => ({ route: e.route, destination: e.destination, time: e.time }));
+                data[key] = etas.slice(0, 3).map(e => ({ route: e.route, destination: e.destination, time: e.time, diffMins: e.diffMins }));
             }
         }
     } catch (e) {
@@ -483,11 +484,17 @@ async function fetchETAs() {
                         destHtml = `<marquee scrollamount="4" style="width: 100%;">${eta.destination}</marquee>`;
                     }
 
+                    // Dynamic color for time
+                    let r = 255;
+                    let gb = Math.max(0, Math.min(255, Math.floor((eta.diffMins / 15) * 255)));
+                    const timeColor = `rgb(255, ${gb}, ${gb})`;
+                    const flashingClass = eta.diffMins === 0 ? 'flashing-text' : '';
+
                     html += `
                     <div class="eta-row">
                         <span class="eta-route ${routeClass}">${eta.route}</span>
                         <span class="eta-dest">${destHtml}</span>
-                        <span class="eta-time">${eta.time}</span>
+                        <span class="eta-time ${flashingClass}" style="color: ${timeColor};">${eta.time}</span>
                     </div>`;
                 });
             } else {

@@ -360,3 +360,12 @@ body {
     animation: marker-blink 1.2s ease-in-out infinite;
     z-index: 1000 !important;
 }
+
+@keyframes flash-text {
+    0%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(255, 0, 0, 0.8); }
+    50% { opacity: 0.3; text-shadow: 0 0 20px rgba(255, 0, 0, 1); }
+}
+
+.flashing-text {
+    animation: flash-text 1s infinite;
+}
