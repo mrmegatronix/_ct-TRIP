@@ -59,10 +59,10 @@ const stops = {
 // East stop is EAST of venue on Daniels → panel goes RIGHT
 // West stop is near venue on Daniels → panel goes LEFT
 const panelAnchors = {
-    north: { direction: 'left',  offset: [-280, -60] },
-    south: { direction: 'right', offset: [30, -60] },
-    east:  { direction: 'right', offset: [30, -60] },
-    west:  { direction: 'left',  offset: [-280, -60] }
+    north: { direction: 'left',  offset: [-360, -140] },
+    south: { direction: 'right', offset: [40, -60] },
+    east:  { direction: 'right', offset: [40, -60] },
+    west:  { direction: 'left',  offset: [-360, -60] }
 };
 
 const stopIcon = L.divIcon({
