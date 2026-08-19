@@ -414,9 +414,21 @@ async function fetchETAs() {
                         const arrivalTime = new Date(trip.realtimeArrival || trip.scheduledArrival);
                         const diffMins = Math.round((arrivalTime - Date.now()) / 60000);
                         if (diffMins >= 0) {
+                            const routeNum = trip.routeId.split(':')[1].split('_')[0];
+                            
+                            // Clean, hardcoded destination names for clarity
+                            let destName = trip.headSign || 'CITY'; 
+                            if (key === 'north') {
+                                if (routeNum === '1') destName = 'BELFAST / RANGIORA';
+                                if (routeNum === '95') destName = 'PEGASUS';
+                            } else if (key === 'south') {
+                                if (routeNum === '1') destName = 'CITY / CASHMERE';
+                                if (routeNum === '95') destName = 'CITY CENTRE';
+                            }
+
                             etas.push({
-                                route: trip.routeId.split(':')[1].split('_')[0],
-                                destination: trip.headSign || `Route ${trip.routeId.split(':')[1].split('_')[0]}`,
+                                route: routeNum,
+                                destination: `#${routeNum} - ${destName.toUpperCase()}`,
                                 time: diffMins === 0 ? 'Due' : `${diffMins} min`,
                                 timestamp: arrivalTime.getTime()
                             });
