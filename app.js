@@ -1,10 +1,10 @@
 // Venue Location
 const venueCoords = [-43.47813787786105, 172.61740700674628];
 
-// Map Initialization - Dashboard Mode (No interactions)
+// Map Initialization - Dashboard Mode (No interactions, locked view)
 const map = L.map('map', {
     center: venueCoords,
-    zoom: 17,
+    zoom: 18,
     zoomControl: false,
     dragging: false,
     scrollWheelZoom: false,
@@ -37,7 +37,7 @@ const venueIcon = L.icon({
 });
 
 L.marker(venueCoords, { icon: venueIcon, zIndexOffset: 1000 })
-    .bindTooltip("Coasters Tavern", { permanent: true, direction: "right", className: "venue-tooltip" })
+    .bindTooltip("Coasters Tavern", { permanent: true, direction: "right", className: "venue-tooltip", offset: [20, 0] })
     .addTo(map);
 
 const libraryCoords = [-43.4774150, 172.6164750];
@@ -59,6 +59,18 @@ const stops = {
     west:  { name: 'West (Daniels Rd)', coords: [-43.478370, 172.617420], id: '29900' }  // South side
 };
 
+// Panel positioning: which side of the stop should the panel appear?
+// North stop is on WEST side of road → panel goes LEFT of stop
+// South stop is on EAST side of road → panel goes RIGHT of stop
+// East stop is EAST of venue on Daniels → panel goes RIGHT
+// West stop is near venue on Daniels → panel goes LEFT
+const panelAnchors = {
+    north: { direction: 'left',  offset: [-280, -60] },
+    south: { direction: 'right', offset: [30, -60] },
+    east:  { direction: 'right', offset: [30, -60] },
+    west:  { direction: 'left',  offset: [-280, -60] }
+};
+
 const stopIcon = L.divIcon({
     className: 'stop-icon',
     html: '🚌',
@@ -69,51 +81,44 @@ const stopIcon = L.divIcon({
 const popups = {};
 const stopMarkers = {};
 const walkingPaths = {};
-const allStopCoords = [venueCoords]; // Keep track of coordinates to fit map
 
-// Add Bus Stops, Popups, and Walking Lines
+// Add Bus Stops and Walking Lines
 for (const [key, stop] of Object.entries(stops)) {
     const marker = L.marker(stop.coords, { icon: stopIcon }).addTo(map);
     stopMarkers[key] = marker;
-    allStopCoords.push(stop.coords);
     
     // Calculate Walking Distance and ETA
     const stopLatLng = L.latLng(stop.coords);
     const venueLatLng = L.latLng(venueCoords);
     const dist = Math.round(venueLatLng.distanceTo(stopLatLng));
-    const walkingTime = Math.ceil(dist / 84); // ~1.4 m/s average walking speed
+    const walkingTime = Math.ceil(dist / 84);
     
-    // Store HTML for the sidebar with walking time included
+    // Store HTML — walking info is inside the panel
     popups[key] = `<div class="eta-card" id="card-${key}">
         <h3>${stop.name}</h3>
-        <p style="color: #ff4d4d; font-size: 1.2rem; font-weight: bold; text-align: center; margin: 5px 0 15px 0; letter-spacing: 1px;">Walk: ${dist}m (${walkingTime} min)</p>
-        <div style="text-align:center; padding:10px;">Loading ETAs...</div>
+        <p class="walk-info">🚶 ${dist}m · ${walkingTime} min walk</p>
+        <div class="eta-loading">Loading ETAs...</div>
     </div>`;
     
-    // Draw Red Walking Line (no tooltip to prevent clipping)
+    // Draw Red Walking Line (no tooltip)
     const walkLine = L.polyline([venueCoords, stop.coords], {
         color: '#ff4d4d',
         weight: 3,
         dashArray: '5, 10',
-        opacity: 0, // Hidden initially
+        opacity: 0,
         className: 'walking-path'
     }).addTo(map);
     
     walkingPaths[key] = walkLine;
 }
 
-// Automatically zoom and crop the map to fit exactly all 4 stops and the tavern
-map.fitBounds(L.latLngBounds(allStopCoords), { padding: [30, 30] });
-
 // ============================================================
-// REAL OSM ROAD GEOMETRY — No offsets, actual carriageway coords
+// REAL OSM ROAD GEOMETRY — actual carriageway coordinates
 // Main North Road is a divided highway with separate one-way roads.
-// Source: OpenStreetMap Overpass API (ways 337126427, 805581241,
-// 114648691, 337126432, 337126430, 114648692, 337126429)
+// Source: OpenStreetMap Overpass API
 // ============================================================
 
 // SOUTHBOUND carriageway (East side, heading toward City Centre)
-// Drawn North-to-South so arrows point south
 const mainNorthRoute_Southbound = [
     [-43.4739075, 172.6172178],
     [-43.4742337, 172.6171929],
@@ -137,7 +142,6 @@ const mainNorthRoute_Southbound = [
 ];
 
 // NORTHBOUND carriageway (West side, heading toward Belfast)
-// Drawn South-to-North so arrows point north
 const mainNorthRoute_Northbound = [
     [-43.4809881, 172.6165197],
     [-43.4798471, 172.6166076],
@@ -156,7 +160,7 @@ const mainNorthRoute_Northbound = [
     [-43.4753338, 172.6169680]
 ];
 
-// Route 125 / Daniels Road (unchanged — user confirmed these are correct)
+// Route 125 / Daniels Road (unchanged)
 function offsetRoute(routePoints, latOffset, lngOffset) {
     return routePoints.map(point => [point[0] + latOffset, point[1] + lngOffset]);
 }
@@ -176,14 +180,11 @@ const route125Path_Westbound = offsetRoute(route125PathRev, -0.00006, 0.00006);
 const mainLine = L.polyline(mainNorthRoute_Southbound, { color: '#3498db', weight: 6, opacity: 0 }).addTo(map); 
 const mainLineRev = L.polyline(mainNorthRoute_Northbound, { color: '#3498db', weight: 6, opacity: 0 }).addTo(map);
 
-// Use dashArray so Route 95 naturally blends with Route 1 on the exact same road
 const route95Line = L.polyline(mainNorthRoute_Southbound, { color: '#9b59b6', weight: 6, opacity: 0, dashArray: '15, 15' }).addTo(map);
 const route95LineRev = L.polyline(mainNorthRoute_Northbound, { color: '#9b59b6', weight: 6, opacity: 0, dashArray: '15, 15' }).addTo(map);
 
 const danielsLine = L.polyline(route125Path_Eastbound, { color: '#2ecc71', weight: 6, opacity: 0 }).addTo(map);
 const danielsLineRev = L.polyline(route125Path_Westbound, { color: '#2ecc71', weight: 6, opacity: 0 }).addTo(map);
-
-
 
 // Decorators setup
 function createDeco(line, color, offset) {
@@ -201,12 +202,6 @@ const deco95Rev = createDeco(route95LineRev, '#9b59b6', 75);
 const decoDaniels = createDeco(danielsLine, '#2ecc71', 10);
 const decoDanielsRev = createDeco(danielsLineRev, '#2ecc71', 60);
 
-const groupNorth = [mainLine, mainLineRev, route95Line, route95LineRev];
-const decosNorth = [decoMain, decoMainRev, deco95, deco95Rev];
-
-const groupDaniels = [danielsLine, danielsLineRev];
-const decosDaniels = [decoDaniels, decoDanielsRev];
-
 let activeDecorators = [];
 let arrowOffset = 0;
 
@@ -221,11 +216,20 @@ setInterval(() => {
             }]);
         }
     });
-}, 50); // 20 frames per second smooth animation
+}, 50);
 
 // Carousel Logic (Rotate active panel every 15 seconds)
 const stopKeys = Object.keys(stops);
 let currentStopIndex = 0;
+
+function positionPanel(key) {
+    const board = document.getElementById('arrivals-board');
+    const stopPixel = map.latLngToContainerPoint(stops[key].coords);
+    const anchor = panelAnchors[key];
+    
+    board.style.left = (stopPixel.x + anchor.offset[0]) + 'px';
+    board.style.top  = (stopPixel.y + anchor.offset[1]) + 'px';
+}
 
 function cyclePanels() {
     const activeKey = stopKeys[currentStopIndex];
@@ -235,26 +239,26 @@ function cyclePanels() {
         walkingPaths[key].setStyle({ opacity: 0 });
     }
     
-    // Hide all routes completely when inactive
+    // Hide all routes
     [mainLine, mainLineRev, route95Line, route95LineRev, danielsLine, danielsLineRev].forEach(line => {
         line.setStyle({ opacity: 0 });
     });
     activeDecorators.forEach(d => map.removeLayer(d.deco));
     
-    // Update Fixed Arrivals Board
+    // Update and position the panel
     const board = document.getElementById('arrivals-board');
     board.style.display = 'block';
     board.innerHTML = popups[activeKey];
+    positionPanel(activeKey);
+    
     walkingPaths[activeKey].setStyle({ opacity: 0.9 });
     
-    // Show only active routes at 100% opacity and add their decorators
+    // Show only active routes
     if (activeKey === 'north') {
-        // Bus heading North, so use the Reversed lines (which are drawn South-to-North)
         mainLineRev.setStyle({ opacity: 1 });
         route95LineRev.setStyle({ opacity: 1 });
         activeDecorators = [decoMainRev, deco95Rev];
     } else if (activeKey === 'south') {
-        // Bus heading South, use the original lines (drawn North-to-South)
         mainLine.setStyle({ opacity: 1 });
         route95Line.setStyle({ opacity: 1 });
         activeDecorators = [decoMain, deco95];
@@ -290,9 +294,6 @@ const mockArrivals = {
     ]
 };
 
-// Anchor map permanently to Coasters Tavern
-map.setView(venueCoords, 16);
-
 // Data Fetching Logic (Static)
 function fetchETAs() {
     try {
@@ -300,7 +301,13 @@ function fetchETAs() {
         
         for (const [key, stop] of Object.entries(stops)) {
             const stopData = data[key];
+            const stopLatLng = L.latLng(stop.coords);
+            const venueLatLng = L.latLng(venueCoords);
+            const dist = Math.round(venueLatLng.distanceTo(stopLatLng));
+            const walkingTime = Math.ceil(dist / 84);
+            
             let html = `<h3>${stop.name}</h3>`;
+            html += `<p class="walk-info">🚶 ${dist}m · ${walkingTime} min walk</p>`;
             
             if (stopData && stopData.length > 0) {
                 stopData.forEach(eta => {
@@ -313,7 +320,7 @@ function fetchETAs() {
                     </div>`;
                 });
             } else {
-                html += `<div style="text-align:center; padding:10px; font-style:italic;">No upcoming buses found</div>`;
+                html += `<div class="eta-loading">No upcoming buses</div>`;
             }
             
             popups[key] = `<div class="eta-card" id="card-${key}">${html}</div>`;
@@ -328,16 +335,16 @@ setTimeout(fetchETAs, 1000);
 
 // Start Carousel
 setInterval(cyclePanels, 15000);
-setTimeout(cyclePanels, 1500); // Trigger first cycle slightly after data load
+setTimeout(cyclePanels, 1500);
 
-// Clock Logic
+// Clock Logic (BLINKING COLONS)
 function updateClock() {
     const now = new Date();
     let hours = now.getHours();
     let minutes = now.getMinutes().toString().padStart(2, '0');
     let ampm = hours >= 12 ? 'pm' : 'am';
     hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
+    hours = hours ? hours : 12;
     hours = hours.toString().padStart(2, '0');
     
     // Blinking colon based on seconds
@@ -348,4 +355,4 @@ function updateClock() {
     document.getElementById('clock').innerHTML = timeString;
 }
 setInterval(updateClock, 1000);
-updateClock(); // run once immediately
+updateClock();
