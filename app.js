@@ -62,11 +62,38 @@ const stops = {
 
 
 const islandCoords = [-43.477415, 172.616900];
+
+// Footpaths follow actual roads:
+// Daniels Rd is roughly at Lat -43.478260
+// Main North Rd (East side) is roughly at Lng 172.617030
+// Main North Rd (West side) is roughly at Lng 172.616740
 const footpaths = {
-    north: [venueCoords, [-43.477415, 172.617407], islandCoords, stops.north.coords], // walk up East side, cross at island
-    south: [venueCoords, [-43.477250, 172.617407], stops.south.coords], // walk up East side, no cross
-    east:  [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.617800], stops.east.coords],
-    west:  [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.61745], [-43.47835, 172.61745], stops.west.coords]
+    north: [
+        venueCoords, 
+        [-43.478260, 172.617407], // South to Daniels Rd
+        [-43.478260, 172.617030], // West to Main North Rd corner
+        [-43.477415, 172.617030], // North to pedestrian crossing
+        islandCoords,             // Cross to island
+        [-43.477415, 172.616740], // Finish crossing to West side
+        stops.north.coords        // North to bus stop
+    ],
+    south: [
+        venueCoords,
+        [-43.478260, 172.617407], // South to Daniels Rd
+        [-43.478260, 172.617030], // West to Main North Rd corner
+        stops.south.coords        // North along East side to bus stop
+    ],
+    east: [
+        venueCoords,
+        [-43.478260, 172.617407], // South to Daniels Rd
+        stops.east.coords         // East to bus stop
+    ],
+    west: [
+        venueCoords,
+        [-43.478260, 172.617407], // South to Daniels Rd
+        [-43.478370, 172.617407], // Cross Daniels Rd
+        stops.west.coords         // To bus stop
+    ]
 };
 
 const stopIcon = L.divIcon({
