@@ -106,6 +106,7 @@ const stopIcon = L.divIcon({
 const popups = {};
 const stopMarkers = {};
 const walkingPaths = {};
+let globalEtaData = {};
 
 // Add Bus Stops and Walking Lines
 for (const [key, stop] of Object.entries(stops)) {
@@ -380,9 +381,9 @@ function cyclePanels() {
         // Determine which routes to show based on ETAs
         let hasRoute1 = false;
         let hasRoute95 = false;
-        if (data[activeKey] && data[activeKey].length > 0) {
-            hasRoute1 = data[activeKey].some(e => e.route === '1');
-            hasRoute95 = data[activeKey].some(e => e.route === '95');
+        if (globalEtaData[activeKey] && globalEtaData[activeKey].length > 0) {
+            hasRoute1 = globalEtaData[activeKey].some(e => e.route === '1');
+            hasRoute95 = globalEtaData[activeKey].some(e => e.route === '95');
         } else {
             hasRoute1 = true;
             hasRoute95 = true;
@@ -536,6 +537,9 @@ async function fetchETAs() {
             
             popups[key] = `<div class="eta-card" id="card-${key}">${html}</div>`;
         }
+        
+        // Save to global variable for cyclePanels to read
+        globalEtaData = data;
         
         // Update sync status text
         updateSyncStatus();
