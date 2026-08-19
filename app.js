@@ -30,8 +30,8 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.p
 
 // Venue Marker using Coasters Logo (Perfect Circle)
 const venueIcon = L.divIcon({
-    className: 'custom-venue-icon venue-logo',
-    html: '<div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid #66fcf1; box-shadow: 0 0 15px rgba(102, 252, 241, 0.8); background-color: #1f2833; display: flex; align-items: center; justify-content: center;"><img src="c-logo.png" style="max-width: 90%; max-height: 90%; object-fit: contain;"></div>',
+    className: 'venue-logo',
+    html: '<img src="c-logo.png" style="width: 100%; height: 100%; object-fit: contain;">',
     iconSize: [80, 80],
     iconAnchor: [40, 40]
 });
@@ -476,10 +476,17 @@ async function fetchETAs() {
             if (stopData && stopData.length > 0) {
                 stopData.forEach(eta => {
                     const routeClass = `route-${eta.route}`;
+                    
+                    // If destination name is long, use marquee to scroll it
+                    let destHtml = eta.destination;
+                    if (eta.destination.length > 15) {
+                        destHtml = `<marquee scrollamount="4" style="width: 100%;">${eta.destination}</marquee>`;
+                    }
+
                     html += `
                     <div class="eta-row">
                         <span class="eta-route ${routeClass}">${eta.route}</span>
-                        <span class="eta-dest">${eta.destination}</span>
+                        <span class="eta-dest">${destHtml}</span>
                         <span class="eta-time">${eta.time}</span>
                     </div>`;
                 });
