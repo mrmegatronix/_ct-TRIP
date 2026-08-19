@@ -70,9 +70,10 @@ for (const [key, data] of Object.entries(stops)) {
     stops[key].marker = marker;
 }
 
+const islandCoords = [-43.477415, 172.616900];
 const footpaths = {
-    north: [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.61690], stops.south.coords, stops.north.coords],
-    south: [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.61690], stops.south.coords],
+    north: [venueCoords, islandCoords, stops.north.coords],
+    south: [venueCoords, islandCoords, stops.south.coords],
     east:  [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.617800], stops.east.coords],
     west:  [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.61745], [-43.47835, 172.61745], stops.west.coords]
 };
@@ -375,29 +376,18 @@ function cyclePanels() {
     currentStopIndex = (currentStopIndex + 1) % stopKeys.length;
 }
 
-// Static Mock Data for GitHub Pages
-const mockArrivals = {
-    north: [
-        { route: '1', destination: 'Rangiora', time: 'Due' },
-        { route: '95', destination: 'Pegasus', time: '5 min' },
-        { route: '1', destination: 'Rangiora', time: '15 min' }
-    ],
-    south: [
-        { route: '1', destination: 'Cashmere', time: '2 min' },
-        { route: '95', destination: 'City', time: '10 min' }
-    ],
-    east: [
-        { route: '125', destination: 'Redwood', time: '7 min' }
-    ],
-    west: [
-        { route: '125', destination: 'Westlake', time: '12 min' }
-    ]
-};
-
-// Data Fetching Logic (Static)
-function fetchETAs() {
+// Data Fetching Logic
+async function fetchETAs() {
+    let data = {};
     try {
-        const data = mockArrivals;
+        // In a real production environment, this would fetch from the Metro API:
+        // const res = await fetch('https://api.metroinfo.co.nz/...');
+        // data = await res.json();
+    } catch (e) {
+        console.error('Failed to fetch ETAs', e);
+    }
+    
+    try {
         
         for (const [key, stop] of Object.entries(stops)) {
             const stopData = data[key];
@@ -435,28 +425,46 @@ function fetchETAs() {
     }
 }
 
-// Render data immediately
-setTimeout(fetchETAs, 1000);
+// Title Animation
+const titles = [
+    "THE WHEELS ON THE BUS GO.... 'TAKE ME HOME!'",
+    "DON'T DRINK & DRIVE.... Drink, don't drive & Survive!"
+];
+let currentTitleIndex = 0;
+setInterval(() => {
+    currentTitleIndex = (currentTitleIndex + 1) % titles.length;
+    const titleEl = document.getElementById('main-title');
+    if (titleEl) {
+        titleEl.style.opacity = '0';
+        setTimeout(() => {
+            titleEl.textContent = titles[currentTitleIndex];
+            titleEl.style.opacity = '1';
+        }, 1000);
+    }
+}, 15000);
+
+// Initialize
+fetchETAs(); 
+setInterval(fetchETAs, 30000); 
 
 // Start Carousel
 setInterval(cyclePanels, 15000);
 setTimeout(cyclePanels, 1500);
 
-// Clock Logic (BLINKING COLONS)
+// Clock Logic
 function updateClock() {
     const now = new Date();
     let hours = now.getHours();
-    let minutes = now.getMinutes().toString().padStart(2, '0');
-    let ampm = hours >= 12 ? 'pm' : 'am';
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'pm' : 'am';
     hours = hours % 12;
     hours = hours ? hours : 12;
-    hours = hours.toString().padStart(2, '0');
     
     // Blinking colon based on seconds
     const showColon = now.getSeconds() % 2 === 0;
     const colon = showColon ? ':' : '<span style="visibility: hidden;">:</span>';
     
-    const timeString = `${hours}${colon}${minutes} <span style="font-size: 0.6em">${ampm}</span>`;
+    const timeString = `${hours.toString().padStart(2, '0')}${colon}${minutes} <span style="font-size: 0.6em">${ampm}</span>`;
     document.getElementById('clock').innerHTML = timeString;
 }
 setInterval(updateClock, 1000);
