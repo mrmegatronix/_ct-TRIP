@@ -31,7 +31,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.p
 // Venue Marker using Coasters Logo (Perfect Circle)
 const venueIcon = L.divIcon({
     className: 'custom-venue-icon venue-logo',
-    html: '<div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid #66fcf1; box-shadow: 0 0 15px rgba(102, 252, 241, 0.8); background-color: #1f2833; display: flex; align-items: center; justify-content: center;"><img src="logo.png" style="max-width: 90%; max-height: 90%; object-fit: contain;"></div>',
+    html: '<div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid #66fcf1; box-shadow: 0 0 15px rgba(102, 252, 241, 0.8); background-color: #1f2833; display: flex; align-items: center; justify-content: center;"><img src="c-logo.png" style="max-width: 90%; max-height: 90%; object-fit: contain;"></div>',
     iconSize: [80, 80],
     iconAnchor: [40, 40]
 });
@@ -416,7 +416,7 @@ async function fetchETAs() {
                         if (diffMins >= 0) {
                             etas.push({
                                 route: trip.routeId.split(':')[1].split('_')[0],
-                                destination: trip.headSign || 'Bus',
+                                destination: trip.headSign || `Route ${trip.routeId.split(':')[1].split('_')[0]}`,
                                 time: diffMins === 0 ? 'Due' : `${diffMins} min`,
                                 timestamp: arrivalTime.getTime()
                             });
@@ -446,7 +446,7 @@ async function fetchETAs() {
                 : nameParts[0];
             
             let html = `<h3>${formattedName}</h3>`;
-            html += `<p class="walk-info">🚶 ${dist}m · ${walkingTime} min walk</p>`;
+            html += `<p class="walk-info">🚶 ${dist} meters · ${walkingTime} min walk</p>`;
             
             if (stopData && stopData.length > 0) {
                 stopData.forEach(eta => {
