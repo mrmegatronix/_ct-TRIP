@@ -1,5 +1,5 @@
 // Venue Location
-const venueCoords = [-43.47813787786105, 172.61740700674628];
+const venueCoords = [-43.4774150, 172.6164750];
 
 // Map Initialization - Dashboard Mode (No interactions, locked view)
 const map = L.map('map', {
@@ -28,24 +28,18 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.p
     className: 'bright-labels'
 }).addTo(map);
 
-// Venue Marker using Coasters Logo
-const venueIcon = L.icon({
-    iconUrl: 'logo.png',
-    iconSize: [40, 40],
-    iconAnchor: [20, 20],
-    className: 'venue-logo'
-});
+// Venue Configuration (Coasters Tavern)
 
-L.marker(venueCoords, { icon: venueIcon, zIndexOffset: 1000 }).addTo(map);
-
-const libraryCoords = [-43.4774150, 172.6164750];
 const libraryIcon = L.divIcon({
     className: 'custom-venue-icon',
-    html: '<div class="venue-icon-container"><i class="fa-solid fa-building-columns"></i></div>',
-    iconSize: [48, 48],
-    iconAnchor: [24, 24]
+    html: `
+        <div class="venue-icon-container"><i class="fa-solid fa-beer-mug-empty"></i></div>
+        <div class="venue-label">COASTERS</div>
+    `,
+    iconSize: [80, 100],
+    iconAnchor: [40, 50]
 });
-L.marker(libraryCoords, { icon: libraryIcon }).addTo(map);
+L.marker(venueCoords, { icon: libraryIcon, zIndexOffset: 1000 }).addTo(map);
 
 
 // Bus Stop Definitions
@@ -56,24 +50,12 @@ const stops = {
     west:  { name: 'West (Daniels Rd)', coords: [-43.478370, 172.617420], id: '29900' }  // South side
 };
 
-// Add markers for all stops
-for (const [key, data] of Object.entries(stops)) {
-    const icon = L.divIcon({
-        className: 'bus-stop-icon',
-        html: `<div class="stop-icon-inner"><i class="fa-solid fa-bus"></i></div>`,
-        iconSize: [36, 36],
-        iconAnchor: [18, 18]
-    });
-    
-    // Store the marker in the stops object so we can add CSS classes to it later
-    const marker = L.marker(data.coords, { icon: icon }).addTo(map);
-    stops[key].marker = marker;
-}
+
 
 const islandCoords = [-43.477415, 172.616900];
 const footpaths = {
-    north: [venueCoords, islandCoords, stops.north.coords],
-    south: [venueCoords, islandCoords, stops.south.coords],
+    north: [venueCoords, stops.north.coords], // West side, no need to cross
+    south: [venueCoords, islandCoords, stops.south.coords], // East side, cross at island
     east:  [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.617800], stops.east.coords],
     west:  [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.61745], [-43.47835, 172.61745], stops.west.coords]
 };
@@ -92,7 +74,7 @@ const walkingPaths = {};
 // Add Bus Stops and Walking Lines
 for (const [key, stop] of Object.entries(stops)) {
     const marker = L.marker(stop.coords, { icon: stopIcon }).addTo(map);
-    stopMarkers[key] = marker;
+    stops[key].marker = marker; // Save marker reference for animation
     
     // Calculate Walking Distance and ETA
     const stopLatLng = L.latLng(stop.coords);
