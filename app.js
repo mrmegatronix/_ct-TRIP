@@ -485,9 +485,21 @@ async function fetchETAs() {
                     }
 
                     // Dynamic color for time
-                    let r = 255;
-                    let gb = Math.max(0, Math.min(255, Math.floor((eta.diffMins / 15) * 255)));
-                    const timeColor = `rgb(255, ${gb}, ${gb})`;
+                    let r = 255, g = 255, b = 255;
+                    if (eta.diffMins >= 15) {
+                        r = 255; g = 255; b = 255; // White
+                    } else if (eta.diffMins >= 10) {
+                        b = Math.floor(((eta.diffMins - 10) / 5) * 255); // White to Yellow
+                    } else if (eta.diffMins >= 5) {
+                        b = 0;
+                        g = 165 + Math.floor(((eta.diffMins - 5) / 5) * 90); // Yellow to Orange
+                    } else if (eta.diffMins > 0) {
+                        b = 0;
+                        g = Math.floor((eta.diffMins / 5) * 165); // Orange to Red
+                    } else {
+                        g = 0; b = 0; // Red
+                    }
+                    const timeColor = `rgb(${r}, ${g}, ${b})`;
                     const flashingClass = eta.diffMins === 0 ? 'flashing-text' : '';
 
                     html += `

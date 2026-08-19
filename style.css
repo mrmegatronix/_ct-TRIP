@@ -144,7 +144,8 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 26px;
-    color: #c5c6c7;
+    font-weight: 900;
+    color: #ffffff;
 }
 
 .eta-time {
