@@ -323,7 +323,7 @@ body {
     100% { box-shadow: 0 0 10px rgba(255, 65, 108, 0.8); transform: scale(1); }
 }
 
-.active-stop-marker .stop-icon-inner, .active-stop-marker .venue-icon-container {
+.active-stop-marker .bus-icon-container {
     animation: marker-blink 1.2s ease-in-out infinite;
     z-index: 1000 !important;
 }

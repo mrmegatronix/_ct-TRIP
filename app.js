@@ -63,8 +63,8 @@ const stops = {
 
 const islandCoords = [-43.477415, 172.616900];
 const footpaths = {
-    north: [venueCoords, libraryCoords, islandCoords, stops.north.coords], // crosses road at library/island
-    south: [venueCoords, [-43.47826, 172.61740], [-43.4778, 172.61740], stops.south.coords], // walks up east side
+    north: [venueCoords, [-43.477415, 172.617407], islandCoords, stops.north.coords], // walk up East side, cross at island
+    south: [venueCoords, [-43.477250, 172.617407], stops.south.coords], // walk up East side, no cross
     east:  [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.617800], stops.east.coords],
     west:  [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.61745], [-43.47835, 172.61745], stops.west.coords]
 };
