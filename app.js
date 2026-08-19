@@ -377,15 +377,30 @@ function cyclePanels() {
         
         walkingPaths[activeKey].setStyle({ opacity: 0.9 });
         
+        // Determine which routes to show based on ETAs
+        let hasRoute1 = false;
+        let hasRoute95 = false;
+        if (data[activeKey] && data[activeKey].length > 0) {
+            hasRoute1 = data[activeKey].some(e => e.route === '1');
+            hasRoute95 = data[activeKey].some(e => e.route === '95');
+        } else {
+            hasRoute1 = true;
+            hasRoute95 = true;
+        }
+        
         // Show only active routes
         if (activeKey === 'north') {
-            mainLineRev.setStyle({ opacity: 1 });
-            route95LineRev.setStyle({ opacity: 1 });
-            activeDecorators = [decoMainRev, deco95Rev];
+            if (hasRoute1) mainLineRev.setStyle({ opacity: 1 });
+            if (hasRoute95) route95LineRev.setStyle({ opacity: 1 });
+            activeDecorators = [];
+            if (hasRoute1) activeDecorators.push(decoMainRev);
+            if (hasRoute95) activeDecorators.push(deco95Rev);
         } else if (activeKey === 'south') {
-            mainLine.setStyle({ opacity: 1 });
-            route95Line.setStyle({ opacity: 1 });
-            activeDecorators = [decoMain, deco95];
+            if (hasRoute1) mainLine.setStyle({ opacity: 1 });
+            if (hasRoute95) route95Line.setStyle({ opacity: 1 });
+            activeDecorators = [];
+            if (hasRoute1) activeDecorators.push(decoMain);
+            if (hasRoute95) activeDecorators.push(deco95);
         } else if (activeKey === 'east') {
             danielsLine.setStyle({ opacity: 1 });
             activeDecorators = [decoDaniels];
@@ -434,9 +449,15 @@ async function fetchETAs() {
                             let destName = trip.headSign;
                             if (!destName) {
                                 // Only fallback if the API doesn't provide a destination
-                                if (key === 'north') destName = (routeNum === '1') ? 'Rangiora' : 'Pegasus';
-                                else if (key === 'south') destName = 'City';
-                                else destName = 'Bus';
+                                if (routeNum === '1') {
+                                    destName = (key === 'north') ? 'Rangiora' : 'City';
+                                } else if (routeNum === '95') {
+                                    destName = (key === 'north') ? 'Pegasus' : 'City';
+                                } else if (routeNum === '125') {
+                                    destName = (key === 'east') ? 'Redwood' : 'Westlake';
+                                } else {
+                                    destName = 'Bus';
+                                }
                             }
 
                             etas.push({
