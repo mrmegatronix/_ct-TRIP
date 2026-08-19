@@ -416,14 +416,12 @@ async function fetchETAs() {
                         if (diffMins >= 0) {
                             const routeNum = trip.routeId.split(':')[1].split('_')[0];
                             
-                            // Clean, hardcoded destination names for clarity
-                            let destName = trip.headSign || 'CITY'; 
-                            if (key === 'north') {
-                                if (routeNum === '1') destName = 'BELFAST / RANGIORA';
-                                if (routeNum === '95') destName = 'PEGASUS';
-                            } else if (key === 'south') {
-                                if (routeNum === '1') destName = 'CITY / CASHMERE';
-                                if (routeNum === '95') destName = 'CITY CENTRE';
+                            let destName = trip.headSign;
+                            if (!destName) {
+                                // Only fallback if the API doesn't provide a destination
+                                if (key === 'north') destName = (routeNum === '1') ? 'Rangiora' : 'Pegasus';
+                                else if (key === 'south') destName = 'City';
+                                else destName = 'Bus';
                             }
 
                             etas.push({
