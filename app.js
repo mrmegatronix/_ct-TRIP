@@ -47,6 +47,15 @@ const libraryIcon = L.divIcon({
 });
 L.marker(libraryCoords, { icon: libraryIcon }).addTo(map);
 
+
+// Bus Stop Definitions
+const stops = {
+    north: { name: 'North (Main North Rd)', coords: [-43.477230, 172.616740], id: '13347' }, // West side
+    south: { name: 'South (Main North Rd)', coords: [-43.477250, 172.617030], id: '15319' }, // East side
+    east:  { name: 'East (Daniels Rd)', coords: [-43.478260, 172.617800], id: '29195' }, // North side
+    west:  { name: 'West (Daniels Rd)', coords: [-43.478370, 172.617420], id: '29900' }  // South side
+};
+
 // Add markers for all stops
 for (const [key, data] of Object.entries(stops)) {
     const icon = L.divIcon({
@@ -60,14 +69,6 @@ for (const [key, data] of Object.entries(stops)) {
     const marker = L.marker(data.coords, { icon: icon }).addTo(map);
     stops[key].marker = marker;
 }
-
-// Bus Stop Definitions
-const stops = {
-    north: { name: 'North (Main North Rd)', coords: [-43.477230, 172.616740], id: '13347' }, // West side
-    south: { name: 'South (Main North Rd)', coords: [-43.477250, 172.617030], id: '15319' }, // East side
-    east:  { name: 'East (Daniels Rd)', coords: [-43.478260, 172.617800], id: '29195' }, // North side
-    west:  { name: 'West (Daniels Rd)', coords: [-43.478370, 172.617420], id: '29900' }  // South side
-};
 
 const footpaths = {
     north: [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.61690], stops.south.coords, stops.north.coords],
