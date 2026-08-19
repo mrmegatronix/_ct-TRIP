@@ -88,7 +88,7 @@ for (const [key, stop] of Object.entries(stops)) {
     // Store HTML — walking info is inside the panel
     popups[key] = `<div class="eta-card" id="card-${key}">
         <h3>${stop.name}</h3>
-        <p class="walk-info">🚶 ${dist}m · ${walkingTime} min walk</p>
+        <p class="walk-info">🚶 ${dist} meters (${walkingTime} min walk)</p>
         <div class="eta-loading">Loading ETAs...</div>
     </div>`;
     
