@@ -69,19 +69,8 @@ for (const [key, stop] of Object.entries(stops)) {
     const marker = L.marker(stop.coords, { icon: stopIcon }).addTo(map);
     stopMarkers[key] = marker;
     
-    // Create an empty popup with specific styling
-    const popup = L.popup({
-        autoClose: true,
-        closeOnClick: false,
-        autoPan: false,
-        className: 'custom-popup',
-        maxWidth: 800
-    })
-    .setLatLng(stop.coords)
-    .setContent(`<div class="eta-card" id="card-${key}"><h3>${stop.name}</h3><div style="text-align:center; padding:10px;">Loading ETAs...</div></div>`);
-    
-    marker.bindPopup(popup);
-    popups[key] = popup;
+    // Store HTML for the sidebar
+    popups[key] = `<div class="eta-card" id="card-${key}"><h3>${stop.name}</h3><div style="text-align:center; padding:10px;">Loading ETAs...</div></div>`;
     
     // Calculate Walking Distance and ETA
     const stopLatLng = L.latLng(stop.coords);
@@ -191,9 +180,8 @@ let currentStopIndex = 0;
 function cyclePanels() {
     const activeKey = stopKeys[currentStopIndex];
     
-    // Hide all popups and walking lines
+    // Hide all walking lines
     for (const key of stopKeys) {
-        stopMarkers[key].closePopup();
         walkingPaths[key].setStyle({ opacity: 0 });
         walkingPaths[key].closeTooltip();
     }
@@ -204,8 +192,10 @@ function cyclePanels() {
     });
     activeDecorators.forEach(d => map.removeLayer(d.deco));
     
-    // Highlight Active Stop
-    stopMarkers[activeKey].openPopup();
+    // Update Fixed Arrivals Board
+    const board = document.getElementById('arrivals-board');
+    board.style.display = 'block';
+    board.innerHTML = popups[activeKey];
     walkingPaths[activeKey].setStyle({ opacity: 0.9 });
     walkingPaths[activeKey].openTooltip();
     
@@ -253,7 +243,7 @@ const mockArrivals = {
 };
 
 // Anchor map permanently to Coasters Tavern
-map.setView(venueCoords, 17);
+map.setView(venueCoords, 16);
 
 // Data Fetching Logic (Static)
 function fetchETAs() {
@@ -278,7 +268,7 @@ function fetchETAs() {
                 html += `<div style="text-align:center; padding:10px; font-style:italic;">No upcoming buses found</div>`;
             }
             
-            popups[key].setContent(`<div class="eta-card" id="card-${key}">${html}</div>`);
+            popups[key] = `<div class="eta-card" id="card-${key}">${html}</div>`;
         }
     } catch (err) {
         console.error('Error rendering arrivals:', err);
