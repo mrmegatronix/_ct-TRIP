@@ -472,7 +472,8 @@ async function fetchETAs() {
 // Title Animation
 const titles = [
     "THE WHEELS ON THE BUS GO.... 'TAKE ME HOME!'",
-    "DON'T DRINK & DRIVE.... Drink, don't drive & Survive!"
+    "DON'T DRINK & DRIVE....",
+    "Drink, don't drive & Survive!"
 ];
 let currentTitleIndex = 0;
 setInterval(() => {
