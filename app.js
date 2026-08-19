@@ -28,12 +28,12 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.p
     className: 'bright-labels'
 }).addTo(map);
 
-// Venue Marker using Coasters Logo
-const venueIcon = L.icon({
-    iconUrl: 'logo.png',
+// Venue Marker using Coasters Logo (Perfect Circle)
+const venueIcon = L.divIcon({
+    className: 'custom-venue-icon venue-logo',
+    html: '<div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid #66fcf1; box-shadow: 0 0 15px rgba(102, 252, 241, 0.8); background-color: #1f2833; display: flex; align-items: center; justify-content: center;"><img src="logo.png" style="max-width: 90%; max-height: 90%; object-fit: contain;"></div>',
     iconSize: [80, 80],
-    iconAnchor: [40, 40],
-    className: 'venue-logo'
+    iconAnchor: [40, 40]
 });
 L.marker(venueCoords, { icon: venueIcon, zIndexOffset: 1000 }).addTo(map);
 
@@ -370,10 +370,36 @@ function cyclePanels() {
 // Data Fetching Logic
 async function fetchETAs() {
     let data = {};
+    const timestamp = Math.floor(Date.now() / 1000);
     try {
-        // In a real production environment, this would fetch from the Metro API:
-        // const res = await fetch('https://api.metroinfo.co.nz/...');
-        // data = await res.json();
+        for (const [key, stop] of Object.entries(stops)) {
+            const url = `https://go.metroinfo.co.nz/mtbp/service/ui/eta/stop/Metro%20Canterbury%3A${stop.id}/${timestamp}/200?locale=en-gb`;
+            const res = await fetch(url, {
+                headers: {
+                    'authorization': 'ApiKey 5vgJIJQTkmeJXN7h2n9drK0UuqrSoWOW'
+                }
+            });
+            if (res.ok) {
+                const json = await res.json();
+                let etas = [];
+                for (const routeTrips of Object.values(json)) {
+                    for (const trip of routeTrips) {
+                        const arrivalTime = new Date(trip.realtimeArrival || trip.scheduledArrival);
+                        const diffMins = Math.round((arrivalTime - Date.now()) / 60000);
+                        if (diffMins >= 0) {
+                            etas.push({
+                                route: trip.routeId.split(':')[1].split('_')[0],
+                                destination: trip.headSign || 'Bus',
+                                time: diffMins === 0 ? 'Due' : `${diffMins} min`,
+                                timestamp: arrivalTime.getTime()
+                            });
+                        }
+                    }
+                }
+                etas.sort((a, b) => a.timestamp - b.timestamp);
+                data[key] = etas.slice(0, 3).map(e => ({ route: e.route, destination: e.destination, time: e.time }));
+            }
+        }
     } catch (e) {
         console.error('Failed to fetch ETAs', e);
     }
