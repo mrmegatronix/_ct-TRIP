@@ -3,8 +3,6 @@ const venueCoords = [-43.47813787786105, 172.61740700674628];
 
 // Map Initialization - Dashboard Mode (No interactions, locked view)
 const map = L.map('map', {
-    center: venueCoords,
-    zoom: 18,
     zoomControl: false,
     dragging: false,
     scrollWheelZoom: false,
@@ -36,9 +34,7 @@ const venueIcon = L.icon({
     className: 'venue-logo'
 });
 
-L.marker(venueCoords, { icon: venueIcon, zIndexOffset: 1000 })
-    .bindTooltip("Coasters Tavern", { permanent: true, direction: "right", className: "venue-tooltip", offset: [20, 0] })
-    .addTo(map);
+L.marker(venueCoords, { icon: venueIcon, zIndexOffset: 1000 }).addTo(map);
 
 const libraryCoords = [-43.4774150, 172.6164750];
 const libraryIcon = L.divIcon({
@@ -47,9 +43,7 @@ const libraryIcon = L.divIcon({
     iconSize: [30, 30],
     iconAnchor: [15, 15]
 });
-L.marker(libraryCoords, { icon: libraryIcon })
-    .bindTooltip("Redwood Library", { permanent: true, direction: "top", className: "venue-tooltip" })
-    .addTo(map);
+L.marker(libraryCoords, { icon: libraryIcon }).addTo(map);
 
 // Bus Stop Definitions
 const stops = {
@@ -111,6 +105,10 @@ for (const [key, stop] of Object.entries(stops)) {
     
     walkingPaths[key] = walkLine;
 }
+
+const allStopCoords = Object.values(stops).map(s => s.coords);
+allStopCoords.push(venueCoords);
+map.fitBounds(L.latLngBounds(allStopCoords), { padding: [50, 50] });
 
 // ============================================================
 // REAL OSM ROAD GEOMETRY — actual carriageway coordinates
