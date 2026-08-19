@@ -328,7 +328,6 @@ function cyclePanels() {
     board.style.opacity = '0';
     
     // Highlight active stop marker, dim others
-    const stopKeys = Object.keys(stops);
     stopKeys.forEach(key => {
         if (stops[key].marker) {
             const el = stops[key].marker.getElement();
