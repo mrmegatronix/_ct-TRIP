@@ -14,19 +14,9 @@ const map = L.map('map', {
     touchZoom: false
 });
 
-// Add Dark Theme Map Tiles (CartoDB Dark Matter without labels)
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    subdomains: 'abcd',
-    maxZoom: 20
-}).addTo(map);
-
-// Add brightened labels as a separate layer
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
-    subdomains: 'abcd',
-    maxZoom: 20,
-    className: 'bright-labels'
-}).addTo(map);
+// Remove broken CartoDB tiles and use local static map instead
+const imageBounds = [[-43.48082639482503, 172.61444091796875], [-43.47086090917324, 172.6226806640625]];
+L.imageOverlay('map_bg.jpg', imageBounds, { opacity: 0.9, zIndex: 0 }).addTo(map);
 
 // Venue Marker using Coasters Logo (Perfect Circle)
 const venueIcon = L.divIcon({
@@ -270,7 +260,8 @@ let activeKey = null;
 
 let qrcode = null;
 function updateQRCode(stopId) {
-    const url = `https://go.metroinfo.co.nz/mtv/?stop=${stopId}`;
+    const fullStopId = `Metro Canterbury:${stopId}`;
+    const url = `https://go.metroinfo.co.nz/mtbp/en-gb/arrivals/stop/${encodeURIComponent(fullStopId)}`;
     if (!qrcode) {
         qrcode = new QRCode(document.getElementById("qrcode"), {
             text: url,
