@@ -35,9 +35,10 @@ full_img = Image.new('RGB', (width_tiles * 256, height_tiles * 256))
 
 for x in range(x_min, x_max + 1):
     for y in range(y_min, y_max + 1):
-        url = f"https://a.basemaps.cartocdn.com/dark_nolabels/{zoom}/{x}/{y}.png"
-        filename = f"/tmp/tile_{x}_{y}.png"
-        req = urllib.request.Request(url, headers={'User-Agent': 'CoastersTavernBusBoard/1.0 (admin@coasterstavern.co.nz)'})
+        # ESRI uses {z}/{y}/{x}
+        url = f"https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{zoom}/{y}/{x}"
+        filename = f"/tmp/tile_{x}_{y}.jpg"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'})
         try:
             with urllib.request.urlopen(req) as response, open(filename, 'wb') as out_file:
                 out_file.write(response.read())
@@ -48,7 +49,10 @@ for x in range(x_min, x_max + 1):
         except Exception as e:
             print(f"Error fetching {url}: {e}")
 
-# Save the final image directly (already dark theme)
+# Apply dark mode filter (invert)
+full_img = ImageOps.invert(full_img)
+
+# Save the final image directly
 full_img.save('/run/media/zeus/6TB-1/__GITHUB NUC/_ct-TRIP/map_bg.jpg', quality=90)
 
 # Calculate exactly what bounds this image represents
