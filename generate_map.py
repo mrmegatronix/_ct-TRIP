@@ -35,10 +35,10 @@ full_img = Image.new('RGB', (width_tiles * 256, height_tiles * 256))
 
 for x in range(x_min, x_max + 1):
     for y in range(y_min, y_max + 1):
-        # ESRI uses {z}/{y}/{x}
-        url = f"https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{zoom}/{y}/{x}"
-        filename = f"/tmp/tile_{x}_{y}.jpg"
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'})
+        # Google Maps uses ?x={x}&y={y}&z={z}
+        url = f"https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={zoom}"
+        filename = f"/tmp/tile_{x}_{y}.png"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         try:
             with urllib.request.urlopen(req) as response, open(filename, 'wb') as out_file:
                 out_file.write(response.read())
@@ -49,10 +49,17 @@ for x in range(x_min, x_max + 1):
         except Exception as e:
             print(f"Error fetching {url}: {e}")
 
-# Apply dark mode filter (invert)
+# Apply dark mode filter: Grayscale -> Invert -> Darken (reduce brightness)
+from PIL import ImageEnhance
+full_img = ImageOps.grayscale(full_img)
 full_img = ImageOps.invert(full_img)
+full_img = full_img.convert('RGB')
+enhancer = ImageEnhance.Brightness(full_img)
+full_img = enhancer.enhance(0.6) # Make it darker, sleek dark gray
+enhancer_contrast = ImageEnhance.Contrast(full_img)
+full_img = enhancer_contrast.enhance(1.2) # Boost contrast slightly
 
-# Save the final image directly
+# Save the final image
 full_img.save('/run/media/zeus/6TB-1/__GITHUB NUC/_ct-TRIP/map_bg.jpg', quality=90)
 
 # Calculate exactly what bounds this image represents
