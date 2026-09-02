@@ -35,24 +35,20 @@ full_img = Image.new('RGB', (width_tiles * 256, height_tiles * 256))
 
 for x in range(x_min, x_max + 1):
     for y in range(y_min, y_max + 1):
-        url = f"https://tile.openstreetmap.org/{zoom}/{x}/{y}.png"
+        url = f"https://a.basemaps.cartocdn.com/dark_nolabels/{zoom}/{x}/{y}.png"
         filename = f"/tmp/tile_{x}_{y}.png"
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        req = urllib.request.Request(url, headers={'User-Agent': 'CoastersTavernBusBoard/1.0 (admin@coasterstavern.co.nz)'})
         try:
             with urllib.request.urlopen(req) as response, open(filename, 'wb') as out_file:
                 out_file.write(response.read())
             
-            img = Image.open(filename)
+            img = Image.open(filename).convert('RGB')
             full_img.paste(img, ((x - x_min) * 256, (y - y_min) * 256))
             os.remove(filename)
         except Exception as e:
             print(f"Error fetching {url}: {e}")
 
-# Apply dark mode filter (invert and desaturate a bit maybe?)
-# Let's just invert for a dark theme look.
-full_img = ImageOps.invert(full_img)
-
-# Save the final image
+# Save the final image directly (already dark theme)
 full_img.save('/run/media/zeus/6TB-1/__GITHUB NUC/_ct-TRIP/map_bg.jpg', quality=90)
 
 # Calculate exactly what bounds this image represents
