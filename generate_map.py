@@ -3,13 +3,6 @@ import urllib.request
 from PIL import Image, ImageOps
 import os
 
-def deg2num(lat_deg, lon_deg, zoom):
-    lat_rad = math.radians(lat_deg)
-    n = 2.0 ** zoom
-    xtile = int((lon_deg + 180.0) / 360.0 * n)
-    ytile = int((1.0 - math.asinh(math.tan(lat_rad)) / math.pi) / 2.0 * n)
-    return (xtile, ytile)
-
 def num2deg(xtile, ytile, zoom):
     n = 2.0 ** zoom
     lon_deg = xtile / n * 360.0 - 180.0
@@ -18,26 +11,26 @@ def num2deg(xtile, ytile, zoom):
     return (lat_deg, lon_deg)
 
 zoom = 17
-lat_min = -43.480
-lat_max = -43.472
-lon_min = 172.615
-lon_max = 172.622
+x_min = 128381
+x_max = 128387
+y_min = 83143
+y_max = 83151
 
-x_min, y_max = deg2num(lat_min, lon_min, zoom)
-x_max, y_min = deg2num(lat_max, lon_max, zoom)
-
+bounds = [
+    [num2deg(x_min, y_max + 1, zoom)[0], num2deg(x_min, y_min, zoom)[1]],
+    [num2deg(x_max + 1, y_min, zoom)[0], num2deg(x_max + 1, y_max + 1, zoom)[1]]
+]
 print(f"Fetching tiles x: {x_min}-{x_max}, y: {y_min}-{y_max}")
+print(f"Bounds: {bounds}")
 
-width_tiles = x_max - x_min + 1
-height_tiles = y_max - y_min + 1
-
-full_img = Image.new('RGB', (width_tiles * 256, height_tiles * 256))
+width = (x_max - x_min + 1) * 256
+height = (y_max - y_min + 1) * 256
+full_img = Image.new('RGB', (width, height), color=(20, 20, 20))
 
 for x in range(x_min, x_max + 1):
     for y in range(y_min, y_max + 1):
-        # Google Maps uses ?x={x}&y={y}&z={z}
-        url = f"https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={zoom}"
-        filename = f"/tmp/tile_{x}_{y}.png"
+        url = f"https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{zoom}/{y}/{x}"
+        filename = f"/tmp/tile_{x}_{y}.jpg"
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         try:
             with urllib.request.urlopen(req) as response, open(filename, 'wb') as out_file:
@@ -47,23 +40,6 @@ for x in range(x_min, x_max + 1):
             full_img.paste(img, ((x - x_min) * 256, (y - y_min) * 256))
             os.remove(filename)
         except Exception as e:
-            print(f"Error fetching {url}: {e}")
+            pass
 
-# Apply dark mode filter: Grayscale -> Invert -> Darken (reduce brightness)
-from PIL import ImageEnhance
-full_img = ImageOps.grayscale(full_img)
-full_img = ImageOps.invert(full_img)
-full_img = full_img.convert('RGB')
-enhancer = ImageEnhance.Brightness(full_img)
-full_img = enhancer.enhance(0.6) # Make it darker, sleek dark gray
-enhancer_contrast = ImageEnhance.Contrast(full_img)
-full_img = enhancer_contrast.enhance(1.2) # Boost contrast slightly
-
-# Save the final image
-full_img.save('/run/media/zeus/6TB-1/__GITHUB NUC/_ct-TRIP/map_bg.jpg', quality=90)
-
-# Calculate exactly what bounds this image represents
-top_left_lat, top_left_lon = num2deg(x_min, y_min, zoom)
-bottom_right_lat, bottom_right_lon = num2deg(x_max + 1, y_max + 1, zoom)
-
-print(f"Bounds: [[{bottom_right_lat}, {top_left_lon}], [{top_left_lat}, {bottom_right_lon}]]")
+full_img.save('/run/media/zeus/6TB-1/__GITHUB NUC/_ct-TRIP/map_bg.jpg', quality=95)

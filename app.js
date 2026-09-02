@@ -15,7 +15,7 @@ const map = L.map('map', {
 });
 
 // Remove broken CartoDB tiles and use local static map instead
-const imageBounds = [[-43.48082639482503, 172.61444091796875], [-43.47086090917324, 172.6226806640625]];
+const imageBounds = [[-43.484812128916026, 172.60894775390625], [-43.466874254747935, 172.628173828125]];
 L.imageOverlay('map_bg.jpg', imageBounds, { opacity: 0.9, zIndex: 0 }).addTo(map);
 
 // Venue Marker using Coasters Logo (Perfect Circle)
@@ -265,8 +265,8 @@ function updateQRCode(stopId) {
     if (!qrcode) {
         qrcode = new QRCode(document.getElementById("qrcode"), {
             text: url,
-            width: 100,
-            height: 100,
+            width: 160,
+            height: 160,
             colorDark : "#000000",
             colorLight : "#ffffff",
             correctLevel : QRCode.CorrectLevel.H
