@@ -1,6 +1,6 @@
 import math
 import urllib.request
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageEnhance
 import os
 
 def num2deg(xtile, ytile, zoom):
@@ -10,11 +10,11 @@ def num2deg(xtile, ytile, zoom):
     lat_deg = math.degrees(lat_rad)
     return (lat_deg, lon_deg)
 
-zoom = 16
-x_min = 64188
-x_max = 64195
-y_min = 41570
-y_max = 41577
+zoom = 17
+x_min = 128380
+x_max = 128387
+y_min = 83144
+y_max = 83150
 
 bounds = [
     [num2deg(x_min, y_max + 1, zoom)[0], num2deg(x_min, y_min, zoom)[1]],
@@ -29,8 +29,8 @@ full_img = Image.new('RGB', (width, height), color=(20, 20, 20))
 
 for x in range(x_min, x_max + 1):
     for y in range(y_min, y_max + 1):
-        url = f"https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{zoom}/{y}/{x}"
-        filename = f"/tmp/tile_{x}_{y}.jpg"
+        url = f"https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={zoom}"
+        filename = f"/tmp/tile_{x}_{y}.png"
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         try:
             with urllib.request.urlopen(req) as response, open(filename, 'wb') as out_file:
@@ -42,4 +42,12 @@ for x in range(x_min, x_max + 1):
         except Exception as e:
             print(f"Error fetching {url}: {e}")
 
-full_img.save('/run/media/zeus/6TB-1/__GITHUB NUC/_ct-TRIP/map_bg.jpg', quality=95)
+full_img = ImageOps.grayscale(full_img)
+full_img = ImageOps.invert(full_img)
+full_img = full_img.convert('RGB')
+enhancer = ImageEnhance.Brightness(full_img)
+full_img = enhancer.enhance(0.6)
+enhancer_contrast = ImageEnhance.Contrast(full_img)
+full_img = enhancer_contrast.enhance(1.2)
+
+full_img.save('/run/media/zeus/6TB-1/__GITHUB NUC/_ct-TRIP/map_bg.jpg', quality=90)
