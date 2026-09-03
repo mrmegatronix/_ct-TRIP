@@ -23,7 +23,7 @@ const venueIcon = L.divIcon({
     className: 'venue-logo',
     html: '<img src="c-logo.png" style="width: 100%; height: 100%; object-fit: contain;">',
     iconSize: [80, 80],
-    iconAnchor: [40, 40]
+    iconAnchor: [40, 60]
 });
 L.marker(venueCoords, { icon: venueIcon, zIndexOffset: 1000 }).addTo(map);
 
@@ -553,20 +553,20 @@ function updateSyncStatus() {
 
 // Title Animation
 const titles = [
-    "CATCH THE NEXT BUS - 'TAKE ME HOME!'",
-    "DON'T DRINK & DRIVE....",
-    "DRINK, DON'T DRIVE & SURVIVE!"
+    "CATCH THE NEXT BUS!",
+    "THE WHEELS ON THE BUS GO.... 'TAKE ME HOME!'",
+    "DON'T DRINK & DRIVE...."
 ];
 let currentTitleIndex = 0;
 setInterval(() => {
     currentTitleIndex = (currentTitleIndex + 1) % titles.length;
     const titleEl = document.getElementById('main-title');
     if (titleEl) {
-        titleEl.style.opacity = '0';
+        titleEl.classList.add('fade-out');
         setTimeout(() => {
             titleEl.innerHTML = titles[currentTitleIndex];
-            titleEl.style.opacity = '1';
-        }, 1000);
+            titleEl.classList.remove('fade-out');
+        }, 800);
     }
 }, 15000);
 

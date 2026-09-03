@@ -264,11 +264,20 @@ body {
     text-transform: uppercase;
     font-family: 'Montserrat', sans-serif;
     letter-spacing: 5px;
-    color: #ff69b4; /* Hot Pink */
+    color: #000000;
     background: transparent;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
-    white-space: normal; /* Allow splitting */
-    overflow: visible;
+    text-shadow: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: opacity 0.8s ease-in-out, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(1);
+    opacity: 1;
+}
+
+.main-title.fade-out {
+    opacity: 0;
+    transform: scale(0.95);
 }
 
 .dark-map {
