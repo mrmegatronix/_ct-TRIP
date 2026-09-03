@@ -553,9 +553,9 @@ function updateSyncStatus() {
 
 // Title Animation
 const titles = [
-    "CATCH THE NEXT BUS<br>THE WHEELS ON THE BUS GO.... 'TAKE ME HOME!'",
+    "CATCH THE NEXT BUS - 'TAKE ME HOME!'",
     "DON'T DRINK & DRIVE....",
-    "DRINK, DON'T DRIVE<br>& SURVIVE!"
+    "DRINK, DON'T DRIVE & SURVIVE!"
 ];
 let currentTitleIndex = 0;
 setInterval(() => {
