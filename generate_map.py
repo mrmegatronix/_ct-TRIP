@@ -10,11 +10,11 @@ def num2deg(xtile, ytile, zoom):
     lat_deg = math.degrees(lat_rad)
     return (lat_deg, lon_deg)
 
-zoom = 17
-x_min = 128381
-x_max = 128387
-y_min = 83143
-y_max = 83151
+zoom = 16
+x_min = 64188
+x_max = 64195
+y_min = 41570
+y_max = 41577
 
 bounds = [
     [num2deg(x_min, y_max + 1, zoom)[0], num2deg(x_min, y_min, zoom)[1]],
@@ -40,6 +40,6 @@ for x in range(x_min, x_max + 1):
             full_img.paste(img, ((x - x_min) * 256, (y - y_min) * 256))
             os.remove(filename)
         except Exception as e:
-            pass
+            print(f"Error fetching {url}: {e}")
 
 full_img.save('/run/media/zeus/6TB-1/__GITHUB NUC/_ct-TRIP/map_bg.jpg', quality=95)
