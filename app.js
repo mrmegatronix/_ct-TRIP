@@ -16,7 +16,7 @@ const map = L.map('map', {
 
 // Remove broken CartoDB tiles and use local static map instead
 const imageBounds = [[-43.48281929474003, 172.606201171875], [-43.468867614829236, 172.628173828125]];
-L.imageOverlay('map_bg.jpg', imageBounds, { opacity: 0.9, zIndex: 0 }).addTo(map);
+L.imageOverlay('noname.svg', imageBounds, { opacity: 0.9, zIndex: 0, className: 'dark-map' }).addTo(map);
 
 // Venue Marker using Coasters Logo (Perfect Circle)
 const venueIcon = L.divIcon({
@@ -553,9 +553,9 @@ function updateSyncStatus() {
 
 // Title Animation
 const titles = [
-    "CATCH THE NEXT BUS!",
+    "CATCH THE NEXT BUS<br>THE WHEELS ON THE BUS GO.... 'TAKE ME HOME!'",
     "DON'T DRINK & DRIVE....",
-    "DRINK, DON'T DRIVE & SURVIVE!"
+    "DRINK, DON'T DRIVE<br>& SURVIVE!"
 ];
 let currentTitleIndex = 0;
 setInterval(() => {

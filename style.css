@@ -259,17 +259,20 @@ body {
     margin: 0 20px;
     flex-grow: 1;
     text-align: center;
-    font-size: 48px;
+    font-size: 56px;
     font-weight: 900;
     text-transform: uppercase;
     font-family: 'Montserrat', sans-serif;
     letter-spacing: 5px;
-    color: #000000;
+    color: #ff69b4; /* Hot Pink */
     background: transparent;
-    text-shadow: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+    white-space: normal; /* Allow splitting */
+    overflow: visible;
+}
+
+.dark-map {
+    filter: invert(1) hue-rotate(180deg) brightness(0.7) contrast(1.2);
 }
 
 /* Hide Leaflet attribution on TV dashboard */
