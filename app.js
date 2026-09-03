@@ -16,7 +16,7 @@ const map = L.map('map', {
 
 // Remove broken CartoDB tiles and use local static map instead
 const imageBounds = [[-43.48281929474003, 172.606201171875], [-43.468867614829236, 172.628173828125]];
-L.imageOverlay('noname.svg', imageBounds, { opacity: 0.9, zIndex: 0, className: 'dark-map' }).addTo(map);
+L.imageOverlay('map_bg.jpg', imageBounds, { opacity: 0.9, zIndex: 0 }).addTo(map);
 
 // Venue Marker using Coasters Logo (Perfect Circle)
 const venueIcon = L.divIcon({
@@ -547,7 +547,7 @@ function updateSyncStatus() {
     const seconds = now.getSeconds().toString().padStart(2, '0');
     const syncStatusEl = document.getElementById('sync-status');
     if (syncStatusEl) {
-        syncStatusEl.textContent = `DATA LAST SYNCED: ${hours}:${minutes}:${seconds}`;
+        syncStatusEl.innerHTML = `DATA LAST SYNCED: ${hours}:${minutes}:${seconds}`;
     }
 }
 
@@ -564,7 +564,7 @@ setInterval(() => {
     if (titleEl) {
         titleEl.style.opacity = '0';
         setTimeout(() => {
-            titleEl.textContent = titles[currentTitleIndex];
+            titleEl.innerHTML = titles[currentTitleIndex];
             titleEl.style.opacity = '1';
         }, 1000);
     }
