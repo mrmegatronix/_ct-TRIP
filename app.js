@@ -260,6 +260,7 @@ let activeKey = null;
 
 let qrcode = null;
 function updateQRCode(stopId) {
+    if (typeof QRCode === 'undefined') return;
     const fullStopId = `Metro Canterbury:${stopId}`;
     const url = `https://go.metroinfo.co.nz/mtbp/en-gb/arrivals/stop/${encodeURIComponent(fullStopId)}`;
     if (!qrcode) {
