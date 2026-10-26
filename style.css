@@ -254,6 +254,16 @@ body {
     text-shadow: none;
 }
 
+@keyframes blinkColon {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+.blink-colon {
+    display: inline-block;
+    animation: blinkColon 1s steps(1, start) infinite;
+}
+
 /* ======== TITLE (matches clock) ======== */
 .main-title {
     margin: 0 20px;

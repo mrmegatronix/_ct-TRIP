@@ -545,9 +545,10 @@ function updateSyncStatus() {
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
     const seconds = now.getSeconds().toString().padStart(2, '0');
+    const colon = '<span class="blink-colon">:</span>';
     const syncStatusEl = document.getElementById('sync-status');
     if (syncStatusEl) {
-        syncStatusEl.innerHTML = `DATA LAST SYNCED: ${hours}:${minutes}:${seconds}`;
+        syncStatusEl.innerHTML = `DATA LAST SYNCED${colon} ${hours}${colon}${minutes}${colon}${seconds}`;
     }
 }
 
@@ -587,9 +588,7 @@ function updateClock() {
     hours = hours % 12;
     hours = hours ? hours : 12;
     
-    // Blinking colon based on seconds
-    const showColon = now.getSeconds() % 2 === 0;
-    const colon = showColon ? ':' : '<span style="visibility: hidden;">:</span>';
+    const colon = '<span class="blink-colon">:</span>';
     
     const timeString = `${hours.toString().padStart(2, '0')}${colon}${minutes} <span style="font-size: 0.6em">${ampm}</span>`;
     document.getElementById('clock').innerHTML = timeString;
